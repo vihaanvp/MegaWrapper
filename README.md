@@ -26,12 +26,10 @@ Arduino ecosystem.
 ## Installation
 
 ```bash
-# Required dependencies
-pip install pyfirmata2 pyserial
-
-# Install MegaWrapper (local / editable)
-pip install -e .
+pip install -e /path/to/MegaWrapper
 ```
+
+**One command, all dependencies included.** `pyfirmata2` and `pyserial` are installed automatically.
 
 MegaWrapper is not published on PyPI — install directly from the source directory.
 
