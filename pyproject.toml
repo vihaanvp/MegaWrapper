@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "megawrapper"
+version = "1.0.0"
+description = "Arduino-style motor and servo control using Firmata — a combined MegaWrapper library"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Vihaan Parlikar"}
+]
+keywords = ["arduino", "motor", "servo", "control", "firmata", "megawrapper"]
+dependencies = [
+    "pyfirmata2",
+    "pyserial"
+]
+requires-python = ">=3.8"
+
+[tool.setuptools.packages.find]
+where = ["src"]
