@@ -26,15 +26,14 @@ Arduino ecosystem.
 ## Installation
 
 ```bash
+# Required dependencies
 pip install pyfirmata2 pyserial
-pip install megawrapper
-```
 
-Or install from source:
-
-```bash
+# Install MegaWrapper (local / editable)
 pip install -e .
 ```
+
+MegaWrapper is not published on PyPI — install directly from the source directory.
 
 ---
 
@@ -86,75 +85,19 @@ servo.sweep(
 
 ---
 
-## Dual Motor Example
+## Full Documentation
 
-```python
-from megawrapper import Board
-import time
+Complete API reference, examples, edge cases, and exception details are available on the **[GitHub Wiki](https://github.com/vihaanvp/MegaWrapper/wiki)**:
 
-board = Board("/dev/ttyUSB0")
-
-left = board.attach_motor(2, 4, 11, name="left")
-right = board.attach_motor(5, 3, 10, name="right")
-
-left.forward(50)
-right.forward(100)
-
-time.sleep(3)
-
-board.stop_all()
-board.close()
-```
-
----
-
-## Context Manager
-
-```python
-from megawrapper import Board, Motor
-
-with Board("/dev/ttyUSB0") as board:
-    motor = board.attach_motor(2, 4, 11)
-    motor.forward(100)
-    # board is automatically closed on exit
-```
-
----
-
-## Optional TB6612FNG Standby Support
-
-```python
-board = Board("/dev/ttyUSB0", stby=6)
-board.sleep()   # disable motor driver
-board.wake()    # re-enable motor driver
-```
-
----
-
-## Examples
-
-Ready-to-run examples are available in the `examples/` directory:
-
-| File | Description |
+| Page | Description |
 |------|-------------|
-| `single_motor.py` | Basic single motor control |
-| `dual_motor.py` | Two motor control |
-| `tank_drive.py` | Tank-style steering |
-| `keyboard_control.py` | Interactive keyboard control |
-| `servo_test.py` | Servo sweep demonstration |
-| `move_smooth.py` | Smooth servo movement |
-| `endless_servo_sweep.py` | Continuous servo sweep |
-
----
-
-## Exceptions
-
-| Exception | When raised |
-|-----------|-------------|
-| `MegaWrapperError` | Base exception for all library errors |
-| `InvalidSpeedError` | Motor speed is outside 0–100 |
-| `BoardConnectionError` | Cannot connect to Arduino |
-| `StandbyNotConfiguredError` | `wake()` / `sleep()` called without a STBY pin |
+| [Board API](https://github.com/vihaanvp/MegaWrapper/wiki/Board-API) | Board class, connection, motor management, standby pin |
+| [Motor API](https://github.com/vihaanvp/MegaWrapper/wiki/Motor-API) | DC motor control — forward, backward, stop, brake |
+| [Servo API](https://github.com/vihaanvp/MegaWrapper/wiki/Servo-API) | Servo control — write, read, smooth movement, sweep |
+| [Utilities](https://github.com/vihaanvp/MegaWrapper/wiki/Utilities) | `delay()`, `millis()` helpers |
+| [Exceptions](https://github.com/vihaanvp/MegaWrapper/wiki/Exceptions) | Exception hierarchy and catch-all patterns |
+| [Examples](https://github.com/vihaanvp/MegaWrapper/wiki/Examples) | 10 complete runnable examples |
+| [Edge Cases & Notes](https://github.com/vihaanvp/MegaWrapper/wiki/Edge-Cases) | Behavioural details and gotchas |
 
 ---
 
