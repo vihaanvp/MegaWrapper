@@ -16,3 +16,8 @@ class BoardConnectionError(MegaWrapperError):
 class StandbyNotConfiguredError(MegaWrapperError):
     """Raised when wake() or sleep() is called without an STBY pin."""
     pass
+
+
+class TCS34725Error(MegaWrapperError):
+    """Raised when a TCS34725 colour sensor operation fails."""
+    pass

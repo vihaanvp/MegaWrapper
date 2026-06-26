@@ -56,8 +56,28 @@ Initial release of MegaWrapper — a unified Python library for Arduino-style DC
   - All tests mock `pyfirmata2.Arduino` — no hardware required.
   - `conftest.py` resets `_active_board` and provides fresh pin mocks per test.
 
+## v0.2.0-beta (2026-06-26)
+
+### Added
+
+- **`TCS34725`** — RGB colour sensor support over Firmata I2C.
+  - `rgb()` / `rgb_raw()` — read normalised and raw RGBC channels.
+  - `color_temperature()` — estimate correlated colour temperature (K).
+  - `lux()` — estimate illuminance (lux).
+  - `set_gain(gain)` — configure sensor gain (1×, 4×, 16×, 60×).
+  - `set_integration_time(ms)` — set integration time (2.4–700 ms).
+  - Firmata I2C read/write via `send_sysex`/`add_cmd_handler`.
+  - I2C reply decoded from 7-bit Firmata encoding.
+  - `TCS34725Error` exception for sensor-specific failures.
+
+- **Testing:**
+  - 22 new unit tests for TCS34725 (94 total).
+  - All tests mock Firmata I2C — no hardware required.
+  - Lazy callback lookup pattern for async I2C reply simulation.
+
 ### Notes
 
+- Released on the `beta` branch — not merged to `main`.
 - Not published on PyPI — install from source.
 - Requires Python 3.8+, Arduino running StandardFirmata.
 - This release merges and supersedes `motor-like-arduino` (v0.1.0) and `servo-like-arduino` (v0.2.0).

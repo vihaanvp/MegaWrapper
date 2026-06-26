@@ -1,18 +1,19 @@
 # AGENTS.md — MegaWrapper
 
-A combined DC-motor + servo control library. Wraps `pyfirmata2` for
+A combined DC-motor + servo + sensor control library. Wraps `pyfirmata2` for
 Arduino-style control over Firmata.
 
 ## Package layout
 
 ```
 src/megawrapper/
-├── __init__.py     # exports Board, Motor, Servo, delay, millis, exceptions
+├── __init__.py     # exports Board, Motor, Servo, TCS34725, delay, millis, exceptions
 ├── board.py        # Board class (motor management + servo singleton)
 ├── motor.py        # Motor class (forward, backward, stop, brake)
 ├── servo.py        # Servo class (write, read, move_smooth, sweep)
+├── tcs34725.py     # TCS34725 colour sensor (I2C via Firmata)
 ├── utils.py        # delay(), millis()
-├── exceptions.py   # MegaWrapperError hierarchy
+├── exceptions.py   # MegaWrapperError hierarchy (includes TCS34725Error)
 └── version.py      # __version__ = "1.0.0"
 ```
 
@@ -24,7 +25,7 @@ Not on PyPI. Install locally: `pip install -e /path/to/MegaWrapper`.
 
 ```bash
 pip install -e .              # editable install (deps: pyfirmata2, pyserial)
-python -m pytest tests/ -v   # run all 72 tests
+python -m pytest tests/ -v   # run all 94 tests
 ```
 
 No lint, typecheck, or CI workflows configured. No `pyproject.toml` tool config
@@ -81,7 +82,7 @@ def mock_pyfirmata2():
 are independent — use `assert_called_with()` on the specific pin mock,
 not `assert_called_once()` on a shared mock.
 
-72 tests across 6 files. Fast (~0.5 s).
+94 tests across 7 files (72 original + 22 TCS34725). Fast (~2.5 s).
 
 ## Exceptions
 
@@ -89,11 +90,31 @@ not `assert_called_once()` on a shared mock.
 MegaWrapperError
 ├── InvalidSpeedError          # speed not a number or outside 0–100
 ├── BoardConnectionError       # Arduino unreachable
-└── StandbyNotConfiguredError  # wake()/sleep() without STBY pin
+├── StandbyNotConfiguredError  # wake()/sleep() without STBY pin
+└── TCS34725Error              # TCS34725 sensor I/O error
 ```
 
 `RuntimeError` is also raised directly for servo state errors (not attached,
 angle unknown).
+
+## TCS34725 colour sensor (`beta` branch)
+
+Developed on the `beta` branch for I2C sensor support over Firmata.
+
+- Communicates via raw `send_sysex(I2C_REQUEST, ...)` and
+  `add_cmd_handler(I2C_REPLY, handler)` — pyfirmata2 has no high-level I2C API.
+- Firmata encodes each 8-bit I2C byte as two 7-bit bytes;
+  `_decode_reply()` reassembles them.
+- **Critical for testing:** I2C reads are asynchronous (Firmata event loop).
+  Use an `_auto_reply()` helper that looks up the registered callback lazily
+  from `captured_callbacks` at call time, so it works even if the handler
+  hasn't been registered yet when the `send_sysex` side-effect is set up.
+
+Test pattern for I2C mocking:
+```python
+ctx["mock_ard"].send_sysex.side_effect = _auto_reply(ctx, id_value=0x44)
+s = TCS34725(board=ctx["board"])
+```
 
 ## History
 
