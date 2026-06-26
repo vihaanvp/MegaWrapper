@@ -30,6 +30,15 @@ class Servo:
 
     def detach(self):
         """Release the servo pin."""
+        if self._servo is not None and self.pin is not None:
+            try:
+                board = Board.get_active_board()
+                # Release the pin in pyfirmata2's internal tracking
+                board._board.taken['digital'][self.pin] = False
+                # Reset the pin mode from SERVO back to OUTPUT on the Arduino
+                board._board.digital[self.pin].mode = 1  # 1 = OUTPUT
+            except (RuntimeError, KeyError, IndexError, AttributeError):
+                pass  # Already detached or board gone — nothing to do
         self._servo = None
         self.pin = None
         self.current_angle = None
